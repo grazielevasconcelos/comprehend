@@ -41,14 +41,23 @@ func getAwsComprehend(w http.ResponseWriter, r *http.Request){
 	err := req.Send()
 
 	if err == nil { // resp is now filled
-		json.NewEncoder(w).Encode(response)
+		err := json.NewEncoder(w).Encode(response)
+		fmt.Println(response)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 	} else {
-		fmt.Println(err)
+		err := json.NewEncoder(w).Encode(err)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 	}
 
-	for _, ent := range response.Entities {
-		fmt.Printf(aws.StringValue(ent.Text) + "\n")
-		//fmt.Printf("%v \n", *ent.Text)
-	}
+	//for _, ent := range response.Entities {
+	//	fmt.Printf(aws.StringValue(ent.Text) + "\n")
+	//	//fmt.Printf("%v \n", *ent.Text)
+	//}
 
 }
