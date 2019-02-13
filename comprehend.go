@@ -6,6 +6,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/comprehend"
+	"io/ioutil"
+	"log"
 )
 
 func main() {
@@ -45,7 +47,18 @@ func getClient(sess *session.Session) *comprehend.Comprehend{
 		Region: aws.String("us-east-2"),
 	})
 }
+
+func getText() string{
+	text, err := ioutil.ReadFile("comprehend_text.txt")
+
+	if err != nil{
+		log.Fatal(err)
+	}
+	return string(text)
+}
+
 func detectEntity(client *comprehend.Comprehend) (*request.Request, *comprehend.DetectEntitiesOutput) {
+	awsText := getText()
 	// Example sending a request using the DetectEntitiesRequest method.
-	return client.DetectEntitiesRequest(&comprehend.DetectEntitiesInput{LanguageCode: aws.String("en"), Text: aws.String("Amazon.com, Inc. is located in Seattle, WA and was founded July 5th, 1994 by Jeff Bezos, allowing customers to buy everything from books to blenders. Seattle is north of Portland and south of Vancouver, BC. Other notable Seattle - based companies are Starbucks and Boeing.")})
+	return client.DetectEntitiesRequest(&comprehend.DetectEntitiesInput{LanguageCode: aws.String("en"), Text: aws.String(awsText)})
 }
